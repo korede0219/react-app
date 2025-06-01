@@ -1,83 +1,100 @@
-import Container from 'react-bootstrap/Container';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
-import NavDropdown from 'react-bootstrap/NavDropdown';
-import Button from 'react-bootstrap/Button';
-import Card from 'react-bootstrap/Card';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
+import React, { useState } from 'react';
+import MovieList from './components/MovieList';
+import Filter from './components/Filter';
+import AddMovie from './components/AddMovie';
 
-import React from 'react';
-import './App.css';
 
-const App = () => {
-  return (
-    <>
-      <Navbar expand="lg" className="bg-body-tertiary shadow-sm">
-        <Container>
-          <Navbar.Brand href="#home">AnimeZone</Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="me-auto">
-              <Nav.Link href="#home">Home</Nav.Link>
-              <Nav.Link href="#link">Link</Nav.Link>
-              <NavDropdown title="More" id="basic-nav-dropdown">
-                <NavDropdown.Item href="#action/3.1">Trending</NavDropdown.Item>
-                <NavDropdown.Item href="#action/3.2">Top Rated</NavDropdown.Item>
-                <NavDropdown.Item href="#action/3.3">Genres</NavDropdown.Item>
-                <NavDropdown.Divider />
-                <NavDropdown.Item href="#action/3.4">Help</NavDropdown.Item>
-              </NavDropdown>
-            </Nav>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
+function App() {
+  const [movies, setMovies] = useState([
+    {
+      title: 'Inception',
+      description: 'A thief who steals corporate secrets through dream-sharing technology.',
+      posterURL: ' https://www.aceshowbiz.com/images/still/inception_poster01.jpg',
+      rating: 5,
+    },
+    {
+      title: 'Interstellar',
+      description: 'A team of explorers travel through a wormhole in space.',
+      posterURL: 'https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg',
+      rating: 4,
+    },
+    {
+      title: 'The Dark Knight',
+      description: 'Batman faces the Joker, a criminal mastermind.',
+      posterURL: 'https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg',
+      rating: 5,
+    },
+    {
+      title: 'Avengers: Endgame',
+      description: 'Superheroes unite to reverse the damage caused by Thanos.',
+      posterURL: 'https://image.tmdb.org/t/p/w500/or06FN3Dka5tukK1e9sl16pB3iy.jpg',
+      rating: 4,
+    },
+    {
+      title: 'The Matrix',
+      description: 'A hacker discovers the reality is a simulated world.',
+      posterURL: 'https://image.tmdb.org/t/p/w500/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg',
+      rating: 5,
+    },
+     {
+      title: 'Musafa The Lion King',
+      description: 'A young lion prince flees his kingdom after the death of his father.',
+      posterURL: 'https://i.pinimg.com/originals/03/28/87/0328873a64e006b58c59bfc6f8f3b427.jpg',
+      rating: 4,
+    },
+    
+    
+  ]);
 
-      <Container className="mt-4">
-        <h1 className="text-center mb-4">Popular Anime</h1>
-        <Row className="g-4">
-          <Col md={4}>
-            <Card  className="anime-card">
-              <Card.Img variant="top" src="https://img.flawlessfiles.com/_r/300x400/100/82/40/82402f796b7d84d7071ab1e03ff7747a/82402f796b7d84d7071ab1e03ff7747a.jpg" />
-              <Card.Body>
-                <Card.Title>Jujutsu Kaisen</Card.Title>
-                <Card.Text>
-                  Paranormal battles and curses await Yuuji Itadori after a cursed item changes his life forever.
-                </Card.Text>
-                <Button variant="primary">Watch</Button>
-              </Card.Body>
-            </Card>
-          </Col>
+  const [filter, setFilter] = useState({ title: '', rating: 0 });
 
-          <Col md={4}>
-            <Card className="anime-card">
-              <Card.Img variant="top" src="https://img.flawlessfiles.com/_r/300x400/100/bc/d8/bcd84731a3eda4f4a306250769675065/bcd84731a3eda4f4a306250769675065.jpg" />
-              <Card.Body>
-                <Card.Title>One Piece</Card.Title>
-                <Card.Text>
-                  Join Luffy and his pirate crew in search of the ultimate treasure that could make him the Pirate King.
-                </Card.Text>
-                <Button variant="primary">Watch</Button>
-              </Card.Body>
-            </Card>
-          </Col>
+  const addMovie = (movie) => {
+    setMovies([...movies, movie]);
+  };
 
-          <Col md={4}>
-            <Card className="anime-card">
-              <Card.Img variant="top" src="https://img.flawlessfiles.com/_r/300x400/100/2c/be/2cbe94bcbf18f0f3c205325d4e234d16/2cbe94bcbf18f0f3c205325d4e234d16.jpg" />
-              <Card.Body>
-                <Card.Title>Dragon Ball Daima</Card.Title>
-                <Card.Text>
-                  Goku faces new demonic threats in a fresh battle following the defeat of Majin Buu.
-                </Card.Text>
-                <Button variant="primary">Watch</Button>
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
-      </Container>
-    </>
+  const filteredMovies = movies.filter(
+    (movie) =>
+      movie.title.toLowerCase().includes(filter.title.toLowerCase()) &&
+      movie.rating >= filter.rating
   );
-};
+
+  return (
+    <div
+      style={{
+        fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+        backgroundColor: '#f8fafc',
+        minHeight: '100vh',
+        padding: '40px 20px',
+        color: '#333',
+      }}
+    >
+      <header style={{ textAlign: 'center', marginBottom: '40px' }}>
+        <h1 style={{ fontWeight: '700', fontSize: '2.8rem', color: '#1e40af' }}>
+          🎬 Movie Explorer
+        </h1>
+        <p style={{ fontSize: '1.1rem', color: '#64748b' }}>
+          Add, filter, and enjoy your favorite movies!
+        </p>
+      </header>
+
+      <Filter setFilter={setFilter} />
+      <AddMovie addMovie={addMovie} />
+      <MovieList movies={filteredMovies} />
+
+      <footer
+        style={{
+          textAlign: 'center',
+          marginTop: '60px',
+          color: '#94a3b8',
+          fontSize: '0.9rem',
+        }}
+      >
+        &copy; 2025 Movie Explorer. All rights reserved.
+        <br />
+        Made with ❤️ by  Sam_
+      </footer>
+    </div>
+  );
+}
 
 export default App;
