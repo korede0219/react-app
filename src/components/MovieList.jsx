@@ -1,25 +1,18 @@
 import React from 'react';
-import MovieCard from './MovieCard';
+import { Link } from 'react-router-dom';
 
 function MovieList({ movies }) {
   return (
-    <div
-      style={{
-        maxWidth: '1100px',
-        margin: '0 auto',
-        display: 'flex',
-        flexWrap: 'wrap',
-        justifyContent: 'center',
-        gap: '20px',
-      }}
-    >
-      {movies.length > 0 ? (
-        movies.map((movie, i) => <MovieCard key={i} movie={movie} />)
-      ) : (
-        <p style={{ fontSize: '1.2rem', color: '#64748b', marginTop: '60px' }}>
-          No movies match your filter criteria.
-        </p>
-      )}
+    <div className="movie-list" style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', justifyContent: 'center', padding: '20px' }}>
+      {movies.map((movie) => (
+        <Link to={`/movie/${movie.id}`} key={movie.id} style={{ textDecoration: 'none', color: 'inherit' }}>
+          <div className="movie-card" style={{ background: '#2c2c2c', padding: '15px', borderRadius: '10px', width: '200px', textAlign: 'center', color: '#fff' }}>
+            <img src={movie.posterURL} alt={movie.title} style={{ width: '100%', borderRadius: '10px' }} />
+            <h3>{movie.title}</h3>
+            <p>⭐ {movie.rating}</p>
+          </div>
+        </Link>
+      ))}
     </div>
   );
 }

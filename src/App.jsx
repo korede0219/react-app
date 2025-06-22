@@ -1,99 +1,78 @@
-import React, { useState } from 'react';
+// App.js (TMDB-integrated version)
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import MovieList from './components/MovieList';
+import MovieDetail from './components/MovieDetail';
+import NavBar from './components/NavBar';
 import Filter from './components/Filter';
 import AddMovie from './components/AddMovie';
+import './App.css';
 
+const API_KEY = '1b46d1e9b517e7102822c44a069760ec';
 
 function App() {
-  const [movies, setMovies] = useState([
-    {
-      title: 'Inception',
-      description: 'A thief who steals corporate secrets through dream-sharing technology.',
-      posterURL: ' https://www.aceshowbiz.com/images/still/inception_poster01.jpg',
-      rating: 5,
-    },
-    {
-      title: 'Interstellar',
-      description: 'A team of explorers travel through a wormhole in space.',
-      posterURL: 'https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg',
-      rating: 4,
-    },
-    {
-      title: 'The Dark Knight',
-      description: 'Batman faces the Joker, a criminal mastermind.',
-      posterURL: 'https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg',
-      rating: 5,
-    },
-    {
-      title: 'Avengers: Endgame',
-      description: 'Superheroes unite to reverse the damage caused by Thanos.',
-      posterURL: 'https://image.tmdb.org/t/p/w500/or06FN3Dka5tukK1e9sl16pB3iy.jpg',
-      rating: 4,
-    },
-    {
-      title: 'The Matrix',
-      description: 'A hacker discovers the reality is a simulated world.',
-      posterURL: 'https://image.tmdb.org/t/p/w500/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg',
-      rating: 5,
-    },
-     {
-      title: 'Musafa The Lion King',
-      description: 'A young lion prince flees his kingdom after the death of his father.',
-      posterURL: 'https://i.pinimg.com/originals/03/28/87/0328873a64e006b58c59bfc6f8f3b427.jpg',
-      rating: 4,
-    },
-    
-    
-  ]);
-
+  const [allMovies, setAllMovies] = useState([]);
   const [filter, setFilter] = useState({ title: '', rating: 0 });
 
+  useEffect(() => {
+    Promise.all([
+      fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=en-US&page=1`).then(res => res.json()),
+      fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=en-US&page=2`).then(res => res.json()),
+      fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=en-US&page=3`).then(res => res.json()),
+      fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=en-US&page=4`).then(res => res.json()),
+      fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=en-US&page=5`).then(res => res.json())
+    ])
+      .then(([page1, page2, page3, page4, page5]) => {
+        const combined = [...page1.results, ...page2.results, ...page3.results, ...page4.results, ...page5.results];
+        const formatted = combined.map(movie => ({
+          id: movie.id,
+          title: movie.title,
+          description: movie.overview,
+          rating: movie.vote_average,
+          posterURL: `https://image.tmdb.org/t/p/w500${movie.poster_path}`,
+          trailer: ''
+        }));
+        setAllMovies(formatted);
+      });
+  }, []);
+
   const addMovie = (movie) => {
-    setMovies([...movies, movie]);
+    setAllMovies(prev => [...prev, { ...movie, id: prev.length + 1 }]);
   };
 
-  const filteredMovies = movies.filter(
-    (movie) =>
+  const filteredMovies = allMovies.filter(
+    movie =>
       movie.title.toLowerCase().includes(filter.title.toLowerCase()) &&
       movie.rating >= filter.rating
   );
 
   return (
-    <div
-      style={{
-        fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-        backgroundColor: '#f8fafc',
-        minHeight: '100vh',
-        padding: '40px 20px',
-        color: '#333',
-      }}
-    >
-      <header style={{ textAlign: 'center', marginBottom: '40px' }}>
-        <h1 style={{ fontWeight: '700', fontSize: '2.8rem', color: '#1e40af' }}>
-          🎬 Movie Explorer
-        </h1>
-        <p style={{ fontSize: '1.1rem', color: '#64748b' }}>
-          Add, filter, and enjoy your favorite movies!
-        </p>
-      </header>
-
-      <Filter setFilter={setFilter} />
-      <AddMovie addMovie={addMovie} />
-      <MovieList movies={filteredMovies} />
-
-      <footer
-        style={{
-          textAlign: 'center',
-          marginTop: '60px',
-          color: '#94a3b8',
-          fontSize: '0.9rem',
-        }}
-      >
-        &copy; 2025 Movie Explorer. All rights reserved.
-        <br />
-        Made with ❤️ by  Sam_
-      </footer>
-    </div>
+    <Router>
+      <div className="app-container">
+        <NavBar />
+        <div className="main-content">
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <>
+                  <div className="controls">
+                    <Filter setFilter={setFilter} />
+                    <AddMovie addMovie={addMovie} />
+                  </div>
+                  <MovieList movies={filteredMovies.slice(0, 20)} />
+                </>
+              }
+            />
+            <Route path="/movie/:id" element={<MovieDetail movies={allMovies} />} />
+            <Route
+              path="/movies"
+              element={<MovieList movies={filteredMovies} />}
+            />
+          </Routes>
+        </div>
+      </div>
+    </Router>
   );
 }
 
