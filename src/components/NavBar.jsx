@@ -13,7 +13,8 @@ function NavBar({ onSearch }) {
     return () => clearTimeout(handler);
   }, [query]);
 
-
+ 
+  
   useEffect(() => {
     if (onSearch) onSearch(debouncedQuery);
   }, [debouncedQuery, onSearch]);
@@ -26,6 +27,9 @@ function NavBar({ onSearch }) {
     e.preventDefault();
     if (onSearch) onSearch(query);
   };
+  
+  
+  
 
   return (
     <nav className="navbar fade-in" style={{
@@ -80,7 +84,7 @@ function NavBar({ onSearch }) {
             }}
           >
             Go
-          </button>
+          </button >
         </form>
       </div>
     </nav>
